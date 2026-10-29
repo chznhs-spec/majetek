@@ -18,7 +18,7 @@ const CONFIG = {
 
   EMAIL: 'vlcr.hlavni@gmail.com', // e-mail pro upozornění administrátora
 
-  MAX_MEMBER: 50,                  // platná členská čísla: 0001 … 0050
+  // Platná členská čísla se ověřují na serveru podle evidence členů v Google Sheets.
 
   MAX_DAYS: 28,                    // maximální délka výpůjčky
 
@@ -522,6 +522,49 @@ async function refreshAdmin() {
   }
 }
 
+/* =====================================================================
+ *  EVIDENCE ČLENŮ (Google Sheets → CSV)
+ *  Sloupce: A = Jméno a příjmení, B = ID, C = e-mail, D = telefon, E = Zaměření
+ * ===================================================================== */
+let membersCache = null;
+
+function parseCsv(text) {
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(cur); rows.push(row); row = []; cur = '';
+    } else cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+
+const normId = v => { const d = String(v ?? '').replace(/\D/g, ''); return d ? ('0000' + d).slice(-4) : ''; };
+
+async function loadMembers() {
+  if (membersCache) return membersCache;
+  const url = String(window.OSCI_MEMBERS_CSV_URL || '').trim();
+  if (!url) throw new Error('V souboru config.js chybí adresa OSCI_MEMBERS_CSV_URL.');
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Evidenci členů se nepodařilo načíst (HTTP ' + res.status + ').');
+  const rows = parseCsv(await res.text());
+  const map = new Map();
+  rows.slice(1).forEach(r => {
+    const id = normId(r[1]), name = String(r[0] || '').trim();
+    if (id && name) map.set(id, name);
+  });
+  if (!map.size) throw new Error('Evidence členů je prázdná nebo má jiný formát.');
+  membersCache = map;
+  return map;
+}
+
 function renderLogin() {
   view = 'login'; session = null; adminToken = null; wiz = null;
   content.innerHTML = `
@@ -538,7 +581,7 @@ function renderLogin() {
         <div class="row">
           <input type="text" id="member" inputmode="numeric" maxlength="4" autocomplete="off" aria-describedby="login-help">
         </div>
-        <div id="login-help" class="hint">Členská čísla jsou v rozsahu 0001 až 0050.</div>
+        <div id="login-help" class="hint">Zadejte své čtyřmístné členské číslo z evidence členů.</div>
       </fieldset>
       <div class="btnrow">
         <button class="btn default" id="login-ok">OK</button>
@@ -557,7 +600,14 @@ function renderLogin() {
     }
     $('#login-ok').disabled = true;
     try {
-      const auth = await api('loginUser', v);
+      const [auth, members] = await Promise.all([
+        api('loginUser', v),
+        loadMembers().catch(error => ({ error }))
+      ]);
+      if (auth.role !== 'admin') {
+        if (members.error) throw members.error;
+        if (!members.has(normId(auth.member || v))) throw new Error('Toto členské číslo není v evidenci členů.');
+      }
       if (auth.role === 'admin') {
         adminToken = auth.token;
         session = { role: 'admin' };
@@ -565,7 +615,7 @@ function renderLogin() {
         db = normalizeDb(data.state);
         renderAdmin(data);
       } else {
-        session = { role: 'member', member: auth.member };
+        session = { role: 'member', member: auth.member, name: members.get(normId(auth.member || v)) };
         db = normalizeDb(await api('getPublicState', auth.member));
         renderMain();
       }
@@ -602,7 +652,7 @@ function renderMain() {
   const statusLed = b ? 'red' : pending ? 'amber' : 'green';
 
   content.innerHTML = `
-    <div class="userbar">Přihlášen: <b>člen č. ${esc(session.member)}</b></div>
+    <div class="userbar">${session.name ? `Dobrý den, <b>${esc(session.name)}</b>` : 'Dobrý den'} <span class="hint">(člen č. ${esc(session.member)})</span></div>
     <div class="main-grid">
       <fieldset class="dev">
         <legend>Přístroj</legend>
@@ -640,7 +690,7 @@ function renderMain() {
   $('#m-return').onclick = doReturn;
   $('#m-refresh').onclick = refreshMemberState;
   $('#m-logout').onclick = renderLogin;
-  setStatus(`Přihlášen člen č. ${session.member}`, deviceState());
+  setStatus(`Přihlášen: ${session.name || 'člen č. ' + session.member}`, deviceState());
 }
 
 async function refreshMemberState() {
