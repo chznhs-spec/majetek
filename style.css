@@ -1,0 +1,309 @@
+/* Internetová výpůjční služba oscilotoskopu – styl Windows 98 */
+
+:root {
+  --face: #c0c0c0;
+  --hi: #ffffff;
+  --lt: #dfdfdf;
+  --sh: #808080;
+  --dk: #0a0a0a;
+  --navy: #000080;
+  --desk: #008080;
+  --font: Tahoma, "MS Sans Serif", "Segoe UI", Verdana, Arial, sans-serif;
+  --raised: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--sh), inset 2px 2px var(--lt);
+  --pressed: inset -1px -1px var(--hi), inset 1px 1px var(--dk), inset -2px -2px var(--lt), inset 2px 2px var(--sh);
+  --field: inset -1px -1px var(--hi), inset 1px 1px var(--sh), inset -2px -2px var(--lt), inset 2px 2px var(--dk);
+  --etched: inset -1px -1px var(--hi), inset 1px 1px var(--sh);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--desk);
+  color: #000;
+  font: 12px/1.35 var(--font);
+  overflow: hidden;
+  cursor: default;
+}
+
+svg { shape-rendering: crispEdges; }
+button { font: inherit; color: inherit; cursor: default; }
+
+/* ---------- Okno ---------- */
+#desktop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+.window {
+  background: var(--face);
+  box-shadow: var(--raised);
+  padding: 3px;
+}
+#app-window {
+  width: min(720px, 100%);
+  max-height: 100%;
+  display: flex; flex-direction: column;
+}
+
+.titlebar {
+  display: flex; align-items: center; gap: 4px;
+  padding: 3px 2px 3px 3px;
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #fff; font-weight: bold;
+  flex: none;
+}
+.titlebar .tt { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.titlebar .ico { width: 16px; height: 16px; flex: none; }
+.tbtns { display: flex; gap: 2px; flex: none; }
+.tbtn {
+  width: 16px; height: 14px; padding: 0; border: 0;
+  background: var(--face); box-shadow: var(--raised);
+  display: grid; place-items: center; color: #000;
+}
+.tbtn:active { box-shadow: var(--pressed); }
+.tbtn i { display: block; position: relative; }
+.g-x { width: 2px; height: 2px; }
+.g-x::before, .g-x::after {
+  content: ""; position: absolute; left: 0; top: -4px;
+  width: 2px; height: 9px; background: #000;
+}
+.g-x::before { transform: rotate(45deg); }
+.g-x::after { transform: rotate(-45deg); }
+
+#win-content {
+  flex: 1; min-height: 0; overflow: auto;
+  padding: 10px;
+  box-shadow: var(--field);
+  background: var(--face);
+  margin: 3px 0;
+}
+
+.statusbar { display: flex; gap: 2px; flex: none; }
+.statusbar span { padding: 2px 6px; box-shadow: var(--etched); min-height: 20px; }
+.statusbar span:first-child { flex: 1; }
+
+/* ---------- Tlačítka a ovládací prvky ---------- */
+.btn {
+  min-width: 78px; padding: 4px 12px;
+  background: var(--face); border: 0;
+  box-shadow: var(--raised);
+  text-align: center;
+}
+.btn:active:not(:disabled) { box-shadow: var(--pressed); padding: 5px 11px 3px 13px; }
+.btn.default { box-shadow: 0 0 0 1px #000, var(--raised); }
+.btn.default:active:not(:disabled) { box-shadow: 0 0 0 1px #000, var(--pressed); }
+.btn:focus-visible { outline: 1px dotted #000; outline-offset: -5px; }
+.btn:disabled { color: var(--sh); text-shadow: 1px 1px 0 var(--hi); }
+
+input[type=text], input[type=number], input[type=tel], input[type=date], textarea, select {
+  font: inherit; color: #000; background: #fff; border: 0;
+  box-shadow: var(--field); padding: 3px 4px; border-radius: 0;
+}
+input[type=text]:focus, input[type=number]:focus, input[type=tel]:focus, input[type=date]:focus, textarea:focus, select:focus { outline: none; }
+textarea { width: 100%; resize: none; display: block; }
+select {
+  -webkit-appearance: none; appearance: none; padding-right: 22px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect x='1' y='1' width='14' height='14' fill='%23c0c0c0'/%3E%3Cpath d='M4 6h7l-3.5 4z' fill='%23000'/%3E%3C/svg%3E") no-repeat right 2px center;
+  min-width: 260px; max-width: 100%;
+}
+input.num { width: 64px; }
+
+input[type=checkbox], input[type=radio] {
+  -webkit-appearance: none; appearance: none;
+  width: 13px; height: 13px; margin: 1px 6px 0 0; flex: none;
+  background: #fff; box-shadow: var(--field); position: relative;
+}
+input[type=radio] { border-radius: 50%; }
+input[type=checkbox]:checked::after {
+  content: ""; position: absolute; left: 4px; top: 1px;
+  width: 3px; height: 7px; border: solid #000; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+input[type=radio]:checked::after {
+  content: ""; position: absolute; left: 4px; top: 4px;
+  width: 5px; height: 5px; border-radius: 50%; background: #000;
+}
+input:disabled { background: var(--face); }
+input:disabled:checked::after { border-color: var(--sh); }
+input[type=radio]:disabled:checked::after { background: var(--sh); }
+input[type=checkbox]:focus-visible, input[type=radio]:focus-visible { outline: 1px dotted #000; outline-offset: 3px; }
+
+label.opt { display: flex; align-items: flex-start; margin: 4px 0; }
+
+fieldset {
+  border: 1px solid var(--sh); box-shadow: 1px 1px 0 var(--hi), inset 1px 1px 0 var(--hi);
+  margin: 0 0 10px; padding: 6px 10px 8px; min-width: 0;
+}
+legend { padding: 0 4px; }
+
+p { margin: 0 0 8px; }
+.lbl { margin: 6px 0 3px; }
+.hint { color: var(--navy); min-height: 1.35em; }
+.row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 6px 0; }
+.btnrow { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+
+/* ---------- Přihlášení a hlavní stránka ---------- */
+.login-hero { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+.login-hero h1 { font-size: 15px; margin: 0 0 6px; }
+.login-hero p { margin: 0; }
+canvas.scope {
+  display: block; background: #021a02;
+  box-shadow: var(--field); border: 0; flex: none;
+  max-width: 100%;
+}
+#member { width: 120px; font-size: 16px; letter-spacing: 3px; }
+.userbar { margin-bottom: 8px; }
+.main-grid { display: grid; grid-template-columns: 210px 1fr; gap: 10px; }
+.main-grid fieldset { margin: 0; }
+.dev { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; }
+.statline { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+.led { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset -1px -1px 0 rgba(0,0,0,.4), inset 1px 1px 0 rgba(255,255,255,.6); }
+.led.green { background: #168316; }
+.led.red { background: #c00000; }
+.led.amber { background: #c58a00; }
+.kv { border-collapse: collapse; }
+.kv td { padding: 1px 10px 1px 0; vertical-align: top; }
+.kv td:first-child { color: #404040; }
+
+.lvwrap { background: #fff; box-shadow: var(--field); max-height: 180px; overflow: auto; }
+table.lv { width: 100%; border-collapse: collapse; }
+table.lv th {
+  background: var(--face); box-shadow: var(--raised);
+  text-align: left; font-weight: normal; padding: 2px 6px; position: sticky; top: 0;
+}
+table.lv td { padding: 2px 6px; border-bottom: 1px dotted #c0c0c0; vertical-align: top; }
+.empty { padding: 10px; color: var(--sh); }
+fieldset.hist { margin-top: 10px; }
+
+/* ---------- Průvodce ---------- */
+.wiz { display: flex; min-height: 430px; }
+.wiz-side {
+  width: 130px; flex: none; padding: 18px 6px; text-align: center;
+  background: linear-gradient(180deg, #000080, #1084d0);
+  color: #fff; display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.wiz-side svg { width: 64px; height: 64px; }
+.wiz-side .cap { font-weight: bold; }
+.wiz-main { flex: 1; min-width: 0; padding-left: 12px; display: flex; flex-direction: column; }
+.wiz-title { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; box-shadow: 0 1px 0 var(--sh), 0 2px 0 var(--hi); }
+.wiz-body { flex: 1; min-height: 280px; padding: 4px 0 10px; }
+.wiz-btns { display: flex; gap: 6px; padding-top: 10px; box-shadow: inset 0 1px 0 var(--sh), inset 0 2px 0 var(--hi); }
+.spacer { flex: 1; }
+
+.scrollbox {
+  height: 150px; overflow-y: auto; background: #fff; box-shadow: var(--field);
+  padding: 6px 8px; margin-bottom: 8px; user-select: text; -webkit-user-select: text;
+}
+.scrollbox p { margin: 0 0 8px; }
+
+.two { display: flex; gap: 8px; align-items: stretch; }
+.two .col { flex: 1; min-width: 0; }
+.two .mid { display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.two .mid .btn { min-width: 96px; }
+.tree, .listbox { height: 170px; overflow: auto; background: #fff; box-shadow: var(--field); padding: 3px; }
+.tree ul { list-style: none; margin: 0; padding-left: 16px; }
+.tree > ul { padding-left: 0; }
+.tree li { margin: 1px 0; white-space: nowrap; }
+.tg {
+  display: inline-block; width: 9px; height: 9px; line-height: 7px; text-align: center;
+  border: 1px solid var(--sh); font-size: 10px; margin-right: 4px; background: #fff;
+  vertical-align: middle;
+}
+.tg.none { border-color: transparent; }
+.ti { padding: 1px 3px; display: inline-block; vertical-align: middle; }
+.ti.sel { background: var(--navy); color: #fff; }
+.fold { display: inline-block; width: 14px; height: 10px; background: #f0d040; border: 1px solid #806000; margin-right: 4px; vertical-align: -1px; }
+.leaf { display: inline-block; width: 10px; height: 12px; background: #fff; border: 1px solid #000; margin-right: 4px; vertical-align: -2px; }
+.listbox .li { padding: 1px 4px; }
+
+.tabs { display: flex; padding-left: 2px; position: relative; z-index: 1; margin-bottom: -1px; }
+.tab {
+  background: var(--face); border: 0; padding: 4px 12px; margin-top: 2px; margin-right: -1px;
+  box-shadow: inset 1px 1px var(--hi), inset -1px 0 var(--dk), inset -2px 0 var(--sh), inset 2px 2px var(--lt);
+}
+.tab.on { margin-top: 0; padding-bottom: 6px; margin-bottom: -1px; position: relative; z-index: 2; }
+.tabpanel {
+  background: var(--face); padding: 12px; min-height: 175px;
+  box-shadow: inset 1px 1px var(--hi), inset -1px -1px var(--dk), inset -2px -2px var(--sh), inset 2px 2px var(--lt);
+}
+
+.progress { height: 20px; box-shadow: var(--field); padding: 2px; background: #fff; margin-top: 8px; }
+.progress .bar {
+  height: 100%; width: 0;
+  background: repeating-linear-gradient(90deg, var(--navy) 0 9px, transparent 9px 11px);
+}
+
+.ok-box { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.ok-box h2 { font-size: 14px; margin: 0 0 6px; }
+
+/* ---------- Dialogy ---------- */
+#modal-root { position: relative; z-index: 1000; }
+.overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; }
+.dialog { width: min(400px, 94vw); }
+.dlg-body { display: flex; gap: 14px; align-items: flex-start; padding: 16px 14px 10px; }
+.dlg-text { flex: 1; min-width: 0; padding-top: 2px; }
+.dlg-btns { display: flex; justify-content: center; gap: 8px; padding: 6px 10px 12px; flex-wrap: wrap; }
+.mi { width: 32px; height: 32px; flex: none; border-radius: 50%; color: #fff; font: bold 22px/32px Georgia, "Times New Roman", serif; text-align: center; }
+.mi-info, .mi-question { background: #0000c8; box-shadow: inset 2px 2px 0 #6a6aff, inset -2px -2px 0 #000070; }
+.mi-info::before { content: "i"; }
+.mi-question::before { content: "?"; }
+.mi-error { background: #d00000; box-shadow: inset 2px 2px 0 #ff7070, inset -2px -2px 0 #700000; }
+.mi-error::before { content: "×"; font-size: 28px; line-height: 30px; }
+.mi-warn { background: #f4e000; color: #000; border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); line-height: 44px; font-size: 20px; }
+.mi-warn::before { content: "!"; }
+
+/* ---------- Posuvníky ve stylu Windows 98 ---------- */
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar { width: 16px; height: 16px; }
+  ::-webkit-scrollbar-track {
+    background-color: var(--face);
+    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%), linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+    background-size: 2px 2px; background-position: 0 0, 1px 1px;
+  }
+  ::-webkit-scrollbar-thumb { background: var(--face); box-shadow: var(--raised); }
+  ::-webkit-scrollbar-corner { background: var(--face); }
+  ::-webkit-scrollbar-button:single-button { display: block; width: 16px; height: 16px; background-color: var(--face); box-shadow: var(--raised); background-repeat: no-repeat; background-position: center; }
+  ::-webkit-scrollbar-button:single-button:vertical:decrement { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M4 10h8L8 5z'/%3E%3C/svg%3E"); }
+  ::-webkit-scrollbar-button:single-button:vertical:increment { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M4 6h8L8 11z'/%3E%3C/svg%3E"); }
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M10 4v8L5 8z'/%3E%3C/svg%3E"); }
+  ::-webkit-scrollbar-button:single-button:horizontal:increment { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M6 4v8l5-4z'/%3E%3C/svg%3E"); }
+}
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-color: #c0c0c0 #e8e8e8; }
+}
+
+/* ---------- Mobil ---------- */
+@media (max-width: 720px) {
+  #desktop { padding: 0; align-items: stretch; }
+  #app-window { width: 100%; height: 100%; max-height: 100%; }
+  .wiz { flex-direction: column; min-height: 0; }
+  .wiz-side { display: none; }
+  .wiz-main { padding-left: 0; }
+  .main-grid { grid-template-columns: 1fr; }
+  .two { flex-direction: column; }
+  .two .mid { flex-direction: row; justify-content: flex-start; }
+  .login-hero { flex-direction: column; align-items: flex-start; }
+  select { min-width: 0; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+
+/* ---------- Administrátorské rozhraní ---------- */
+.admin-request { margin-top: 8px; }
+.admin-request p { overflow-wrap: anywhere; }
+.admin-date-row { align-items: flex-end; }
+.admin-date-row label { display: flex; flex-direction: column; gap: 3px; }
+.admin-date-row input[type=date] { min-width: 145px; }
+.admin-request .btnrow { flex-wrap: wrap; }
+@media (max-width: 720px) {
+  .admin-date-row { align-items: stretch; }
+  .admin-date-row label { width: 100%; }
+  .admin-date-row input[type=date] { width: 100%; }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Internetová výpůjční služba oscilotoskopu</title>
+  <meta name="description" content="Internetová výpůjční služba oscilotoskopu – přihlaste se členským číslem a požádejte o výpůjčku.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='2' width='14' height='12' fill='%23c0c0c0' stroke='%23000'/%3E%3Crect x='3' y='4' width='7' height='7' fill='%23021a02'/%3E%3Cpath d='M3 8L5 5L7 11L9 6L10 8' stroke='%2345ff45' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-scope" viewBox="0 0 16 16">
+    <rect x="1.5" y="2.5" width="13" height="11" fill="#c0c0c0" stroke="#000"/>
+    <rect x="3" y="4" width="7" height="7" fill="#021a02" stroke="#808080"/>
+    <path d="M3 8 L5 5 L7 11 L9 6 L10 8" stroke="#45ff45" fill="none"/>
+    <rect x="11.5" y="5" width="2" height="2" fill="#000"/>
+    <rect x="11.5" y="8.5" width="2" height="2" fill="#000"/>
+  </symbol>
+</svg>
+<noscript>
+  <div class="window" style="margin:40px auto;max-width:420px">
+    <div class="titlebar"><span class="tt">Chyba</span></div>
+    <p style="padding:12px">Tato aplikace vyžaduje JavaScript. Zapněte jej prosím a stránku obnovte.</p>
+  </div>
+</noscript>
+<main id="desktop">
+  <section id="app-window" class="window" aria-labelledby="app-title">
+    <div class="titlebar">
+      <svg class="ico"><use href="#i-scope"/></svg>
+      <span id="app-title" class="tt">Internetová výpůjční služba oscilotoskopu</span>
+      <span class="tbtns">
+        <button class="tbtn close" id="btn-close" aria-label="Odhlásit" title="Odhlásit"><i class="g-x"></i></button>
+      </span>
+    </div>
+    <div id="win-content"></div>
+    <div class="statusbar">
+      <span id="st-left">Načítání…</span>
+      <span id="st-right"></span>
+    </div>
+  </section>
+</main>
+<div id="modal-root"></div>
+</body>
+</html>
