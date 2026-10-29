@@ -16,7 +16,7 @@
 
 const CONFIG = {
 
-  EMAIL: 'kontakt@vzdelanylid.cz', // e-mail pro upozornění administrátora
+  EMAIL: 'vlcr.hlavni@gmail.com', // e-mail pro upozornění administrátora
 
   MAX_MEMBER: 50,                  // platná členská čísla: 0001 … 0050
 
